@@ -83,7 +83,7 @@ void scrolling(float speed, float vertical,float horizontal) {
     text.uv.x += GameTime * horizontal * 600 * speed;
 }
 
-void scrollingMasked(float speed, float vertical,float horizontal) {
+void scrolling_masked(float speed, float vertical,float horizontal) {
 
     vec2 offsetUv = text.uv;
     offsetUv.y += GameTime * vertical * 600 * speed;
@@ -94,16 +94,49 @@ void scrollingMasked(float speed, float vertical,float horizontal) {
     text.color = vec4(textureSample.r,textureSample.g,textureSample.b,textureSample.a * text.color.a);
 }
 
-void alphaMultiplier(float alpha) {
+void alpha_multiplier(float alpha) {
     text.color.a *= alpha;
 }
 
-void alphaGradient(float alpha1,float alpha2,float speed, float frequency,float direction) {
+void alpha_gradient(float alpha1,float alpha2,float speed, float frequency,float direction) {
     float rotationAngle = 0.08 * frequency * (text.pos.x * (direction * 2) + text.pos.y * (2 - direction * 2)) - GameTime * 600.0 * speed * PI;
     float t = (sin(rotationAngle) + 1.0) * 0.5;
     text.color.a = mix(alpha1 * text.color.a,alpha2 * text.color.a,t);
     if(text.isShadow) text.color.a *= 0.25;
 }
+
+float euclidian_center_distance() {
+    vec2 screenPosNormalized = vec2(0,0);
+    screenPosNormalized.x = text.pos.x / 256.;
+    screenPosNormalized.y = text.pos.y / 256.;
+    float dis = sqrt(pow(screenPosNormalized.x,2) + pow(screenPosNormalized.y,2));
+    return dis;
+}
+
+float linear_top_distance() {
+    return (text.pos.y / 512.) +0.5;
+}
+
+float linear_bottom_distance() {
+    return 0.5 - (text.pos.y / 512.);
+}
+
+float linear_right_distance() {
+    return (text.pos.x / 512.) +0.5;
+}
+float linear_left_distance() {
+    return 0.5 - (text.pos.x / 512.);
+}
+
+void sdf_mask(float t, float spread, float value) {
+    spread = max(spread,0.0001);
+    float start = t - spread / 2;
+    float end = t + spread / 2;
+    float transition = max(min(value,end),start);
+    float alpha = map(transition,start,end,0.,1.);
+    text.color.a = alpha;
+}
+
 
 void iterating(float speed, float space) {
     float x = mod(text.charPos.x * 0.4 - GameTime * 18000.0 * speed, (5.0 * space) * TAU); if(x > TAU) x = TAU;

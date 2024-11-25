@@ -23,8 +23,8 @@ vec4 HeatMapColor(float value, float minValue, float maxValue)
         vec4(1.00, 0.60, 0.00, 1.00),
         vec4(1.00, 0.00, 0.00, 1.00)
     );
-    float ratio= 5. * (value / (maxValue - minValue));
-    int indexMin = int(floor(ratio));
+    float ratio= max(5. * (value / (maxValue - minValue)),0);
+    int indexMin = int(max(floor(ratio),0));
     int indexMax= int(min(indexMin + 1,5));
     return mix(colors[indexMin], colors[indexMax], ratio - indexMin);
 }
@@ -105,4 +105,20 @@ float noise(vec3 p){
 		mix(random(ip+vec3(0.0,0.0,1.0)),random(ip+vec3(1.0,0.0,1.0)),u.x),
 		mix(random(ip+vec3(0.0,1.0,1.0)),random(ip+vec3(1.0,1.0,1.0)),u.x),u.y),u.z);
 	return res*res;
+}
+
+float map(float value, float inMin, float inMax, float outMin, float outMax) {
+  return outMin + (outMax - outMin) * (value - inMin) / (inMax - inMin);
+}
+
+vec2 map(vec2 value, vec2 inMin, vec2 inMax, vec2 outMin, vec2 outMax) {
+  return outMin + (outMax - outMin) * (value - inMin) / (inMax - inMin);
+}
+
+vec3 map(vec3 value, vec3 inMin, vec3 inMax, vec3 outMin, vec3 outMax) {
+  return outMin + (outMax - outMin) * (value - inMin) / (inMax - inMin);
+}
+
+vec4 map(vec4 value, vec4 inMin, vec4 inMax, vec4 outMin, vec4 outMax) {
+  return outMin + (outMax - outMin) * (value - inMin) / (inMax - inMin);
 }

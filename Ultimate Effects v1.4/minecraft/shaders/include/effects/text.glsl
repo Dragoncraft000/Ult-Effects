@@ -105,10 +105,24 @@ void alpha_gradient(float alpha1,float alpha2,float speed, float frequency,float
     if(text.isShadow) text.color.a *= 0.25;
 }
 
-float euclidian_center_distance() {
+float relative_center_distance() {
     vec2 screenPosNormalized = vec2(0,0);
     screenPosNormalized.x = text.pos.x / 256.;
     screenPosNormalized.y = text.pos.y / 256.;
+    float dis = sqrt(pow(screenPosNormalized.x,2) + pow(screenPosNormalized.y,2));
+    return dis;
+}
+
+float euclidian_center_distance() {
+    vec2 screenPosNormalized = vec2(0,0);
+    screenPosNormalized.x = (text.pos.x / 256.) * ScreenSize.x;
+    screenPosNormalized.y = (text.pos.y / 256.) * ScreenSize.y;
+
+    if (ScreenSize.y < ScreenSize.x) {
+        screenPosNormalized /= ScreenSize.y;
+    } else {
+        screenPosNormalized /= ScreenSize.x;
+    }
     float dis = sqrt(pow(screenPosNormalized.x,2) + pow(screenPosNormalized.y,2));
     return dis;
 }
